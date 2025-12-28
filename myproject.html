@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Recognition Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .score-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .prompt-area {
+            text-align: center;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            text-shadow: -1px -1px 0 #000,
+                         1px -1px 0 #000,
+                         -1px 1px 0 #000,
+                         1px 1px 0 #000;
+        }
+        
+        .instruction {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .color-btn {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .color-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .color-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .feedback {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            min-height: 30px;
+            margin-top: 15px;
+        }
+        
+        .correct {
+            color: #28a745;
+        }
+        
+        .wrong {
+            color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎨 Color Recognition Game</h1>
+        
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Correct</div>
+                <div class="score-value" id="correct">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Wrong</div>
+                <div class="score-value" id="wrong">0</div>
+            </div>
+        </div>
+        
+        <div class="prompt-area" id="prompt">
+            Ready to start
+        </div>
+        
+        <div class="instruction">
+            👆 Click the color block that matches the <strong>text content</strong>
+        </div>
+        
+        <div class="grid" id="grid"></div>
+        
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        const colors = {
+            'Red': '#e74c3c',
+            'Orange': '#f39c12',
+            'Yellow': '#f1c40f',
+            'Green': '#27ae60',
+            'Blue': '#3498db',
+            'Purple': '#9b59b6'
+        };
+        
+        const colorNames = Object.keys(colors);
+        let score = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let targetColor = '';
+        
+        function getRandomColor() {
+            return colorNames[Math.floor(Math.random() * colorNames.length)];
+        }
+        
+        function updatePrompt() {
+            const textContent = getRandomColor();
+            const textColor = getRandomColor();
+            const bgColor = getRandomColor();
+            targetColor = textContent;
+            
+            const prompt = document.getElementById('prompt');
+            prompt.textContent = textContent;
+            prompt.style.color = colors[textColor];
+            prompt.style.backgroundColor = colors[bgColor];
+        }
+        
+        function createGrid() {
+            const grid = document.getElementById('grid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < 64; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'color-btn';
+                const color = getRandomColor();
+                btn.style.backgroundColor = colors[color];
+                btn.dataset.color = color;
+                btn.addEventListener('click', handleClick);
+                grid.appendChild(btn);
+            }
+        }
+        
+        function handleClick(e) {
+            const clickedColor = e.target.dataset.color;
+            const feedback = document.getElementById('feedback');
+            
+            if (clickedColor === targetColor) {
+                score += 10;
+                correctCount++;
+                feedback.textContent = '✓ Correct! +10 points';
+                feedback.className = 'feedback correct';
+            } else {
+                score -= 5;
+                wrongCount++;
+                feedback.textContent = '✗ Wrong! -5 points';
+                feedback.className = 'feedback wrong';
+            }
+            
+            document.getElementById('score').textContent = score;
+            document.getElementById('correct').textContent = correctCount;
+            document.getElementById('wrong').textContent = wrongCount;
+            
+            setTimeout(() => {
+                feedback.textContent = '';
+                updatePrompt();
+                createGrid();
+            }, 500);
+        }
+        
+        // Initialize game
+        updatePrompt();
+        createGrid();
+    </script>
+</body>
+</html>
