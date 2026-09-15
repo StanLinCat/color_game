@@ -124,6 +124,28 @@
         .wrong {
             color: #dc3545;
         }
+
+        .reset-btn {
+            display: block;
+            margin: 0 auto 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #6c757d;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+
+        .reset-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -144,7 +166,9 @@
                 <div class="score-value" id="wrong">0</div>
             </div>
         </div>
-        
+
+        <button class="reset-btn" id="resetBtn">🔄 Reset Score</button>
+
         <div class="prompt-area" id="prompt">
             Ready to start
         </div>
@@ -232,6 +256,18 @@
             }, 500);
         }
         
+        function resetScore() {
+            score = 0;
+            correctCount = 0;
+            wrongCount = 0;
+            document.getElementById('score').textContent = score;
+            document.getElementById('correct').textContent = correctCount;
+            document.getElementById('wrong').textContent = wrongCount;
+            document.getElementById('feedback').textContent = '';
+        }
+
+        document.getElementById('resetBtn').addEventListener('click', resetScore);
+
         // Initialize game
         updatePrompt();
         createGrid();
